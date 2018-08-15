@@ -1,10 +1,10 @@
 const colors = require('colors') ;
 const http = require('https') ;
-const commentsHttp = require('https') ;
+//const commentsHttp = require('https') ;
+
+//  Express related code, unrelated to Reddit
 const express = require('express') ;
-
 const app = express() ;
-
 app.get('/', (req,res) => {
     res.send('<html><body><h1>Hello</h1></body></html>')
 }) ;
@@ -15,6 +15,9 @@ app.get('/asd',(req,res)=>{
 })
 
 app.listen(3000, () => { console.log("Listening on port 3000...") } )
+
+
+//Start of reddit related stuff 
 
 const options = {
     host: 'www.reddit.com',
@@ -27,16 +30,16 @@ const options = {
 } ;
 
 
-function getComments(threadId)
+function getComments(subredditName,threadId,limit,sort)
 {
     console.log(`Thread ID: ${threadId}`.red)
     const listComments = {
         host: 'www.reddit.com',
         port: 443,
-        path: `/r/Portland/comments/${threadId}/.json`
+        path: `/r/${subredditName}/comments/${threadId}/new/.json?limit=${limit}&sort=${sort}`
     }
     
-    commentsHttp.request(options, (res) => {
+    http.request(listComments, (res) => {
         let commentBody = '' ;
         res.on('data', (chunk) => {
             commentBody += chunk ;
@@ -44,17 +47,29 @@ function getComments(threadId)
 
         res.on('end', () => {
             var commentResponce = JSON.parse(commentBody) ;
-            console.log(commentResponce.data.children[10].data) ;
+            /*console.log(commentResponce.data.children[1].data.id) ;
+            console.log(commentResponce.data.children[1].data.title) ;
+            console.log(commentResponce.data.children[1].data.selftext) ;
+            console.log(commentResponce.data.children[1].data) ; */
+            console.log(commentResponce) ;
 
-            /* for (var i = 0 ; i < commentResponce.data.children.length ; i++ )
+            for (var i = 0 ; i < commentResponce.length ; i++ )
             {
-                let title = commentResponce.data.children[i].data.title ;
-                let id = commentResponce.data.children[i].data.id ;
-                console.log(`body: ${commentResponce.data.children[i].data.body}` ) ;
-                console.log(`ID: ${id}` ) ;
-                console.log("");
-                //console.dir()
-            } */
+                for (var j = 0 ; j < commentResponce[i].data.children.length ; j++)
+                {
+                    console.log("") ;
+                    console.log(commentResponce[i].data.children.length)
+                    var val = j+1 ;
+                    console.log(val + "".bold) ;
+                    console.log(`author: ${commentResponce[i].data.children[j].data.author}`.red + `comment id: ${commentResponce[i].data.children[j].data.id}`.cyan) ;
+                    console.log(`score: ${commentResponce[i].data.children[j].data.score}`.magenta + `ups: ${commentResponce[i].data.children[j].data.ups}`.magenta) ;
+/*                    console.log() ;
+                    console.log() ;
+*/                  console.log(`comment: ${commentResponce[i].data.children[j].data.body}`.cyan) ;
+                    console.log("*************************************************************")
+
+                }
+            } 
             
     //        console.dir(body)
         })
@@ -91,4 +106,4 @@ function makeRequest()
 } ;
 
 //makeRequest() ;
-getComments('96q3wq')
+getComments('politics','97bc5s',"100","controversial") //options for sort order: hot,new,rising,controversial,top,guided

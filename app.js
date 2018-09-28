@@ -1,21 +1,5 @@
 const colors = require('colors') ;
 const http = require('https') ;
-//const commentsHttp = require('https') ;
-
-//  Express related code, unrelated to Reddit
-const express = require('express') ;
-const app = express() ;
-app.get('/', (req,res) => {
-    res.send('<html><body><h1>Hello</h1></body></html>')
-}) ;
-
-app.get('/asd',(req,res)=>{
-    
-    res.send([1,2,3])
-})
-
-app.listen(3000, () => { console.log("Listening on port 3000...") } )
-
 
 //Start of reddit related stuff 
 
